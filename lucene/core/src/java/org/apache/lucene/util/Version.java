@@ -33,6 +33,47 @@ import java.util.Locale;
 public final class Version {
 
   /**
+   * Match settings and bugs in Lucene's 4.10.0 release.
+   * @deprecated (5.0) Use latest
+   */
+  @Deprecated
+  public static final Version LUCENE_4_10_0 = new Version(4, 10, 0);
+
+  /**
+   * Match settings and bugs in Lucene's 4.10.1 release.
+   * @deprecated (5.0) Use latest
+   */
+  @Deprecated
+  public static final Version LUCENE_4_10_1 = new Version(4, 10, 1);
+
+  /**
+   * Match settings and bugs in Lucene's 4.10.2 release.
+   * @deprecated (5.0) Use latest
+   */
+  @Deprecated
+  public static final Version LUCENE_4_10_2 = new Version(4, 10, 2);
+
+  /**
+   * Match settings and bugs in Lucene's 4.10.3 release.
+   * @deprecated (5.0) Use latest
+   */
+  @Deprecated
+  public static final Version LUCENE_4_10_3 = new Version(4, 10, 3);
+
+  /**
+   * Match settings and bugs in Lucene's 4.10.4 release.
+   * @deprecated (5.0) Use latest
+   */
+  @Deprecated
+  public static final Version LUCENE_4_10_4 = new Version(4, 10, 4);
+
+  /** Match settings and bugs in Lucene's 5.0 release.
+   *  <p>
+   *  Use this to get the latest &amp; greatest settings, bug
+   *  fixes, etc, for Lucene.
+   * @deprecated (5.1.0) Use latest
+   */
+  /**
    * Match settings and bugs in Lucene's 5.0 release.
    * @deprecated (5.0) Use latest
    */

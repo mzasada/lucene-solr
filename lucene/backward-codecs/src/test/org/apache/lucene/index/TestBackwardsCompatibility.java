@@ -81,7 +81,7 @@ import org.junit.BeforeClass;
 */
 public class TestBackwardsCompatibility extends LuceneTestCase {
 
-  // Backcompat index generation, described below, is mostly automated in: 
+  // Backcompat index generation, described below, is mostly automated in:
   //
   //    dev-tools/scripts/addBackCompatIndexes.py
   //
@@ -216,6 +216,16 @@ public class TestBackwardsCompatibility extends LuceneTestCase {
   }
 
   final static String[] oldNames = {
+      "4.10.0-cfs",
+      "4.10.0-nocfs",
+      "4.10.1-cfs",
+      "4.10.1-nocfs",
+      "4.10.2-cfs",
+      "4.10.2-nocfs",
+      "4.10.3-cfs",
+      "4.10.3-nocfs",
+      "4.10.4-cfs",
+      "4.10.4-nocfs",
       "5.0.0-cfs",
       "5.0.0-nocfs",
       "5.1.0-cfs",
@@ -330,19 +340,7 @@ public class TestBackwardsCompatibility extends LuceneTestCase {
       "4.9.0-cfs",
       "4.9.0-nocfs",
       "4.9.1-cfs",
-      "4.9.1-nocfs",
-      "4.10.0-cfs",
-      "4.10.0-nocfs",
-      "4.10.1-cfs",
-      "4.10.1-nocfs",
-      "4.10.2-cfs",
-      "4.10.2-nocfs",
-      "4.10.3-cfs",
-      "4.10.3-nocfs",
-      "4.10.4-cfs",
-      "4.10.4-nocfs",
-      "5x-with-4x-segments-cfs",
-      "5x-with-4x-segments-nocfs"
+      "4.9.1-nocfs"
   };
   
   final static String[] oldSingleSegmentNames = {
@@ -1284,7 +1282,7 @@ public class TestBackwardsCompatibility extends LuceneTestCase {
     newIndexUpgrader(dir).upgrade();
 
     checkAllSegmentsUpgraded(dir);
-    
+
     dir.close();
   }
 
@@ -1329,7 +1327,7 @@ public class TestBackwardsCompatibility extends LuceneTestCase {
     }
     reader.close();
   }
-  
+
   public void testDocValuesUpdates() throws Exception {
     Path oldIndexDir = createTempDir("dvupdates");
     TestUtil.unzip(getDataInputStream(dvUpdatesIndex), oldIndexDir);

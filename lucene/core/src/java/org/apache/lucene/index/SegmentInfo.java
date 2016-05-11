@@ -21,7 +21,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -103,7 +102,7 @@ public final class SegmentInfo {
     this.codec = codec;
     this.diagnostics = Objects.requireNonNull(diagnostics);
     this.id = id;
-    if (id.length != StringHelper.ID_LENGTH) {
+    if (id != null && id.length != StringHelper.ID_LENGTH) {
       throw new IllegalArgumentException("invalid id: " + Arrays.toString(id));
     }
     this.attributes = Objects.requireNonNull(attributes);
@@ -235,7 +234,7 @@ public final class SegmentInfo {
 
   /** Return the id that uniquely identifies this segment. */
   public byte[] getId() {
-    return id.clone();
+    return id == null ? null : id.clone();
   }
 
   private Set<String> setFiles;
@@ -268,9 +267,6 @@ public final class SegmentInfo {
       m.reset(file);
       if (!m.matches()) {
         throw new IllegalArgumentException("invalid codec filename '" + file + "', must match: " + IndexFileNames.CODEC_FILE_PATTERN.pattern());
-      }
-      if (file.toLowerCase(Locale.ROOT).endsWith(".tmp")) {
-        throw new IllegalArgumentException("invalid codec filename '" + file + "', cannot end with .tmp extension");
       }
     }
   }

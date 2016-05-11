@@ -573,7 +573,7 @@ class Lucene50DocValuesConsumer extends DocValuesConsumer implements Closeable {
     }
   }
 
-  private Iterable<Number> docToSetId(SortedSet<LongsRef> uniqueValueSets, Iterable<Number> docToValueCount, Iterable<Number> values) {
+  private Iterable<Number> docToSetId(SortedSet<LongsRef> uniqueValueSets, final Iterable<Number> docToValueCount, final Iterable<Number> values) {
     final Map<LongsRef, Integer> setIds = new HashMap<>();
     int i = 0;
     for (LongsRef set : uniqueValueSets) {
@@ -606,6 +606,10 @@ class Lucene50DocValuesConsumer extends DocValuesConsumer implements Closeable {
             return id;
           }
 
+          @Override
+          public void remove() {
+            throw new UnsupportedOperationException();
+          }
         };
 
       }

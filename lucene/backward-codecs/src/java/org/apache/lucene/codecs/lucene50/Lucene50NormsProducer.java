@@ -368,7 +368,7 @@ final class Lucene50NormsProducer extends NormsProducer {
           int doc = (int) live.get(i);
           set.set(doc);
         }
-        Norms nestedInstance = loadNorms(entry.nested);
+        final Norms nestedInstance = loadNorms(entry.nested);
         return new Norms() {
           @Override
           public long get(int docID) {

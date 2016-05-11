@@ -30,25 +30,28 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import org.apache.lucene.analysis.MockAnalyzer;
 import org.apache.lucene.codecs.Codec;
+import org.apache.lucene.codecs.PointsFormat;
 import org.apache.lucene.codecs.StoredFieldsFormat;
 import org.apache.lucene.codecs.simpletext.SimpleTextCodec;
 import org.apache.lucene.document.Document;
-import org.apache.lucene.document.Field.Store;
 import org.apache.lucene.document.Field;
-import org.apache.lucene.document.IntPoint;
+import org.apache.lucene.document.Field.Store;
 import org.apache.lucene.document.FieldType;
+import org.apache.lucene.document.IntPoint;
+import org.apache.lucene.document.LegacyIntField;
 import org.apache.lucene.document.NumericDocValuesField;
 import org.apache.lucene.document.StoredField;
 import org.apache.lucene.document.StringField;
 import org.apache.lucene.document.TextField;
 import org.apache.lucene.search.IndexSearcher;
+import org.apache.lucene.search.LegacyNumericRangeQuery;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.MMapDirectory;
-import org.apache.lucene.store.MockDirectoryWrapper.Throttling;
 import org.apache.lucene.store.MockDirectoryWrapper;
+import org.apache.lucene.store.MockDirectoryWrapper.Throttling;
 import org.apache.lucene.util.BytesRef;
 import org.apache.lucene.util.IOUtils;
 import org.apache.lucene.util.TestUtil;
@@ -276,13 +279,19 @@ public abstract class BaseStoredFieldsFormatTestCase extends BaseIndexFileFormat
       answers[id] = answer;
       typeAnswers[id] = typeAnswer;
       doc.add(new StoredField("id", id));
-      doc.add(new IntPoint("id", id));
+      if (supportsPoints()) {
+        doc.add(new IntPoint("id", id));
+      } else {
+        FieldType ft = new FieldType(LegacyIntField.TYPE_STORED);
+        ft.setNumericPrecisionStep(Integer.MAX_VALUE);
+        doc.add(new LegacyIntField("id", id, ft));
+      }
       doc.add(new NumericDocValuesField("id", id));
       w.addDocument(doc);
     }
     final DirectoryReader r = w.getReader();
     w.close();
-    
+
     assertEquals(numDocs, r.numDocs());
 
     for(LeafReaderContext ctx : r.leaves()) {
@@ -507,7 +516,12 @@ public abstract class BaseStoredFieldsFormatTestCase extends BaseIndexFileFormat
     final FieldType type = new FieldType(StringField.TYPE_STORED);
     type.setIndexOptions(IndexOptions.NONE);
     type.freeze();
-    IntPoint id = new IntPoint("id", 0);
+    Field id;
+    if(supportsPoints()) {
+      id = new IntPoint("id", 0);
+    } else {
+      id = new LegacyIntField("id", 0, Store.NO);
+    }
     StoredField idStored = new StoredField("id", 0);
     for (int i = 0; i < data.length; ++i) {
       Document doc = new Document();
@@ -537,7 +551,11 @@ public abstract class BaseStoredFieldsFormatTestCase extends BaseIndexFileFormat
     for (int i = 0; i < 10; ++i) {
       final int min = random().nextInt(data.length);
       final int max = min + random().nextInt(20);
-      iw.deleteDocuments(IntPoint.newRangeQuery("id", min, max-1));
+      if (supportsPoints()) {
+        iw.deleteDocuments(IntPoint.newRangeQuery("id", min, max - 1));
+      } else {
+        iw.deleteDocuments(LegacyNumericRangeQuery.newIntRange("id", min, max, true, false));
+      }
     }
 
     iw.forceMerge(2); // force merges with deletions
@@ -800,5 +818,9 @@ public abstract class BaseStoredFieldsFormatTestCase extends BaseIndexFileFormat
 
     IOUtils.close(iw, ir, everything);
     IOUtils.close(dirs);
+  }
+
+  private boolean supportsPoints() {
+    return PointsFormat.EMPTY != getCodec().pointsFormat();
   }
 }
